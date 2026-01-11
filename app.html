@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>REVEAL.AI</title>
+
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      min-height: 100vh;
+      font-family: 'Outfit', sans-serif;
+      background: #1e073c;
+      color: #eaeaea;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 900px;
+      padding: 10px;
+    }
+
+    /* LOGO */
+    .logo-container {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 12px;
+    }
+
+    .logo {
+      max-width: 800px;
+      height: 400px;
+    }
+
+    .subtitle {
+      text-align: center;
+      opacity: 0.8;
+      margin-bottom: 48px;
+      font-size: 30px;
+    }
+
+    .section-title {
+      text-align: center;
+      font-size: 28px;
+      margin-bottom: 16px;
+    }
+
+    /* UPLOAD */
+    .upload-zone {
+      border: 3px dashed #3282b8;
+      border-radius: 20px;
+      padding: 60px 40px;
+      text-align: center;
+      cursor: pointer;
+      transition: 0.3s;
+      background: #16213e;
+    }
+
+    .upload-zone.drag { transform: scale(1.02); }
+    .upload-zone:hover { transform: translateY(-3px); }
+
+    .file-info {
+      margin-top: 20px;
+      padding: 20px;
+      background: #16213e;
+      border-radius: 16px;
+      display: none;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .file-info.active { display: flex; }
+
+    button {
+      width: 100%;
+      margin-top: 24px;
+      padding: 18px;
+      font-size: 18px;
+      font-weight: 600;
+      border: none;
+      border-radius: 16px;
+      cursor: pointer;
+      background: #0f4c75;
+      color: white;
+    }
+
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* PROGRESS */
+    .progress {
+      margin-top: 24px;
+      display: none;
+    }
+
+    .progress.active { display: block; }
+
+    .bar {
+      height: 8px;
+      background: #0f4c75;
+      width: 0%;
+      border-radius: 999px;
+      transition: width 0.3s;
+    }
+
+    /* RESULTS */
+    .results {
+      margin-top: 32px;
+      padding: 32px;
+      border-radius: 20px;
+      text-align: center;
+      display: none;
+    }
+
+    .results.active { display: block; }
+
+    .ai {
+      border: 2px solid #ef4444;
+      color: #ef4444;
+    }
+
+    .real {
+      border: 2px solid #10b981;
+      color: #10b981;
+    }
+  </style>
+</head>
+
+<body>
+<div class="container">
+
+  <!-- LOGO -->
+  <div class="logo-container">
+    <img src="Reveal.AI text.png" alt="REVEAL.AI Logo" class="logo">
+  </div>
+
+  <p class="subtitle">AI Video Authenticity Detection</p>
+
+  <!-- VIDEO SECTION -->
+  <h2 class="section-title">🎥 Video Analysis</h2>
+
+  <div id="videoUploadZone" class="upload-zone">
+    <p><strong>Drop your video here</strong></p>
+    <p style="opacity:0.6">MP4 / MOV / AVI</p>
+    <input type="file" id="videoInput" accept="video/*" hidden>
+  </div>
+
+  <div id="videoFileInfo" class="file-info">
+    <span id="videoFileName"></span>
+    <button onclick="resetVideo()">Remove</button>
+  </div>
+
+  <button id="videoAnalyzeBtn" disabled onclick="analyzeVideo()">
+    Reveal Video
+  </button>
+
+  <div id="videoProgress" class="progress">
+    <p>Analyzing video…</p>
+    <div style="background:#111827;border-radius:999px;">
+      <div id="videoProgressBar" class="bar"></div>
+    </div>
+  </div>
+
+  <div id="videoResults" class="results"></div>
+
+</div>
+
+<script>
+/* ================= VIDEO LOGIC ================= */
+let videoFile = null;
+
+const videoUploadZone = document.getElementById("videoUploadZone");
+const videoInput = document.getElementById("videoInput");
+const videoAnalyzeBtn = document.getElementById("videoAnalyzeBtn");
+
+videoUploadZone.onclick = () => videoInput.click();
+
+videoUploadZone.addEventListener("dragover", e => {
+  e.preventDefault();
+  videoUploadZone.classList.add("drag");
+});
+
+videoUploadZone.addEventListener("dragleave", () => {
+  videoUploadZone.classList.remove("drag");
+});
+
+videoUploadZone.addEventListener("drop", e => {
+  e.preventDefault();
+  videoUploadZone.classList.remove("drag");
+  if (e.dataTransfer.files.length) handleVideo(e.dataTransfer.files[0]);
+});
+
+videoInput.addEventListener("change", e => {
+  if (e.target.files.length) handleVideo(e.target.files[0]);
+});
+
+function handleVideo(file) {
+  if (!file.type.startsWith("video/")) {
+    alert("Invalid video file");
+    return;
+  }
+  videoFile = file;
+  document.getElementById("videoFileName").innerText = file.name;
+  document.getElementById("videoFileInfo").classList.add("active");
+  videoAnalyzeBtn.disabled = false;
+}
+
+function resetVideo() {
+  videoFile = null;
+  videoInput.value = "";
+  document.getElementById("videoFileInfo").classList.remove("active");
+  videoAnalyzeBtn.disabled = true;
+}
+
+async function analyzeVideo() {
+  videoAnalyzeBtn.disabled = true;
+  document.getElementById("videoProgress").classList.add("active");
+  document.getElementById("videoResults").classList.remove("active");
+
+  const bar = document.getElementById("videoProgressBar");
+  bar.style.width = "30%";
+
+  const formData = new FormData();
+  formData.append("file", videoFile);
+
+  try {
+    const res = await fetch("http://127.0.0.1:8000/predict", {
+      method: "POST",
+      body: formData
+    });
+
+    bar.style.width = "80%";
+    const data = await res.json();
+    bar.style.width = "100%";
+
+    showResult(data.prediction, data.confidence);
+  } catch {
+    alert("Backend not reachable");
+  }
+
+  document.getElementById("videoProgress").classList.remove("active");
+  videoAnalyzeBtn.disabled = false;
+}
+
+function showResult(label, confidence) {
+  const resultDiv = document.getElementById("videoResults");
+  const isAI = label.toLowerCase().includes("ai");
+
+  resultDiv.className = `results active ${isAI ? "ai" : "real"}`;
+  resultDiv.innerHTML = `
+    <h2>${label}</h2>
+    <p>Confidence: ${confidence}%</p>
+  `;
+}
+</script>
+</body>
+</html>
