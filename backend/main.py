@@ -129,7 +129,7 @@ video_model = swin3d_t(weights=None)
 video_model.head = torch.nn.Linear(video_model.head.in_features, 2)
 
 video_model.load_state_dict(
-    torch.load("best_swin_model.pth", map_location=DEVICE, weights_only=False)
+    torch.load("best_swin_model2.pth", map_location=DEVICE, weights_only=False)
 )
 
 video_model.to(DEVICE)
