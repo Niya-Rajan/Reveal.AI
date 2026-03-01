@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Reveal.AI</title>
-
+  <link href="https://fonts.googleapis.com/css2?family=Allura&display=swap" rel="stylesheet">
   <style>
     /* LOAD MOONTIME FONT */
     @font-face {
@@ -29,7 +29,7 @@
     .landing {
       height: 100vh;
       width: 100%;
-      background: url("background.png") no-repeat center center / cover;
+      background: url("Reveal.AI coverpage.png") no-repeat center center / cover;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -76,29 +76,32 @@
 
     /* TEXT */
     .title {
-      font-size: 120px;
+      font-family: 'Allura', cursive;
+      font-size: 64px;        /* Increase if needed */
+      font-weight: 400;
+      letter-spacing: 1px;
       color: #ffffff;
       cursor: pointer;
       display: inline-block;
       transform-origin: center center;
       transition: transform 1.6s ease;
-      will-change: transform;
+      text-shadow: 0 0 20px rgba(255,255,255,0.35);
+      margin-top: 1.8cm;
     }
 
     .title:not(.expand):hover {
       transform: scale(1.15);
     }
 
-    /* CLICK EXPANSION */
     .expand {
-      transform: scale(9);
+      transform: scale(2);
     }
 
     .tagline {
-      margin-top: 20px;
-      font-size: 22px;
+      margin-top: 14px;
+      font-size: 18px;                 /* slightly smaller */
+      font-family: Arial, sans-serif;  /* clean readable font */
       color: rgba(255,255,255,0.85);
-      font-family: Arial, sans-serif;
     }
 
     /* WHITE TRANSITION OVERLAY */
@@ -140,10 +143,10 @@
     <div class="center-content">
       <span id="revealText" class="title">Reveal.AI</span>
       <div class="tagline">
-        Uncover the truth behind AI-generated media
+        Wanna know reality?
       </div>
     </div>
-
+      
     <div id="whiteScreen" class="white-screen"></div>
   </div>
 

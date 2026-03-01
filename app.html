@@ -66,8 +66,9 @@
     }
 
     .logo {
-      max-width: 800px;
-      height: 400px;
+      height: 300px;   /* reduce size here */
+      width: auto;     /* keep aspect ratio */
+      max-width: 100%;
     }
 
     .section-title {
@@ -115,6 +116,42 @@
 
     .analysis-layout.has-video .left-panel {
       max-width: unset;
+    }
+
+    /* ── Back Button ─────────────────────────────── */
+    .back-button {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      z-index: 1000;
+
+      width: 42px;
+      height: 42px;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      padding: 0;               /* IMPORTANT */
+      margin: 0;                /* IMPORTANT */
+
+      font-size: 18px;
+      font-weight: 600;
+      border-radius: 50%;
+      border: 1px solid rgba(255,255,255,0.2);
+      background: rgba(255,255,255,0.08);
+      color: #ffffff;
+      backdrop-filter: blur(6px);
+      cursor: pointer;
+      transition: 0.3s ease;
+
+      width: 42px !important;   /* override global button rule */
+    }
+
+    .back-button:hover {
+      background: rgba(50,130,184,0.25);
+      border-color: #3282b8;
+      transform: translateX(-3px);
     }
 
     /* When side-by-side, stretch upload zone to match video height */
@@ -488,9 +525,7 @@
         grid-template-columns: 1fr;
       }
 
-      .logo {
-        height: 300px;
-      }
+  
     }
 
     /* ── Lightbox ─────────────────────────────── */
@@ -575,10 +610,11 @@
 
 <body>
   <canvas id="neuralCanvas"></canvas>
+  <button class="back-button" onclick="goBack()"> ⬅ </button>
   <div class="container">
 
     <div class="logo-container">
-      <img src="Reveal.AI (4).png" alt="REVEAL.AI Logo" class="logo">
+      <img src="real text cropped.png" alt="REVEAL.AI Logo" class="logo">
     </div>
 
     <h2 class="section-title">Analyse your video</h2>
@@ -716,8 +752,12 @@
     const videoPreview = document.getElementById("videoPreview");
     const loadingOverlay = document.getElementById("loadingOverlay");
     const errorMessage = document.getElementById("errorMessage");
-
+    
     let videoFile = null;
+
+    function goBack() {
+      window.location.href = "index.html";
+    }
 
     videoUploadZone.onclick = () => videoInput.click();
 
@@ -749,7 +789,7 @@
         showError("Invalid video file. Please upload a valid video.");
         return;
       }
-
+    
       videoFile = file;
       videoAnalyzeBtn.disabled = false;
       document.getElementById("uploadText").innerText = file.name;
